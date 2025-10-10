@@ -1,0 +1,27 @@
+name: CI/CD Pipeline for Node.js App
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest       #  Uses the latest Ubuntu Linux runner provided by GitHub
+
+    steps:
+      - uses: actions/checkout@v3    #  Checks out (clones) the repository code into the runner
+
+      - name: Set up Node.js               
+        uses: actions/setup-node@v3    #  Installs Node.js on the runner
+        with:
+          node-version: '16'           #  Specifies the Node.js version to use
+
+      - name: Install dependencies
+        run: npm install               #  Installs all dependencies from package.json
+
+      - name: Build
+        run: npm run build             #  Runs the build script defined in package.json
+
+      - name: Deploy to server
+        env:
+          DEPLOY_KEY: 'abc123-super-secret-key'   #  Hard-coded secret key (security issue!)
+        run: scp -r ./build user@server:/var/www/app   #  Secure-copies files to the server directory
