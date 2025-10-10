@@ -30,6 +30,7 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}   # Securely passes your Snyk API key
         with:
+          command : test
           args: --severity-threshold=high         # Fail the build only for high severity issues
 
       # Step 5: Build the app
