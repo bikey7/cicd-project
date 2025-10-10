@@ -3,7 +3,7 @@ name: CI/CD Pipeline for Node.js App
 on:
   push:
     branches:
-      - master   # Trigger the pipeline whenever code is pushed to master branch
+      - devsecops   # Trigger the pipeline whenever code is pushed to master branch
 
 jobs:
   build:
