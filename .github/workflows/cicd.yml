@@ -1,0 +1,47 @@
+name: CI/CD Pipeline for Node.js App
+
+on:
+  push:
+    branches:
+      - master   # Trigger the pipeline whenever code is pushed to master branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest   # Run job on GitHub-hosted Ubuntu environment
+
+    steps:
+      # Step 1: Checkout code from GitHub
+      - uses: actions/checkout@v3
+        # This step downloads your repository so the workflow can access it
+
+      # Step 2: Set up Node.js environment
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'   # Specify Node.js version used in your project
+
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: npm install        # Installs all packages from package.json
+
+      # Step 4: Run Snyk vulnerability scan
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/node@master   # Official Snyk GitHub Action for Node.js
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}   # Securely passes your Snyk API key
+        with:
+          args: --severity-threshold=high         # Fail the build only for high severity issues
+
+      # Step 5: Build the app
+      - name: Build
+        run: npm run build        # Runs the build command from your package.json
+
+      # Step 6: Deploy build artifacts to your Azure VM
+      - name: Deploy to server
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}   # Private SSH key stored securely in GitHub Secrets
+        run: |
+          echo "$DEPLOY_KEY" > deploy_key         # Write key contents to a temporary file
+          chmod 600 deploy_key                    # Restrict key file permissions
+          scp -o StrictHostKeyChecking=no -i deploy_key -r ./build azureuser@VM-IP:/var/www/app
+          rm deploy_key                           # Clean up after deployment
