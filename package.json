@@ -14,7 +14,7 @@
   "dependencies": {
     "express": "4.17.0",
     "lodash": "4.17.11",
-    "minimatch": "3.0.4"
+    "minimatch": "3.1.2"
   },
   "devDependencies": {
     "snyk": "^1.685.0"
